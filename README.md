@@ -1,8 +1,5 @@
-# Projeto Lógico de Banco de Dados Oficina Mecanica - DIO
+# Projeto Lógico de Banco de Dados Oficina Mecânica
 Construindo o Projeto Lógico de Banco de Dados de um Sistema de Emissão de Ordens de Serviços para uma Oficina Mecânica.
-
-## Objetivo:
-Cria o esquema conceitual para o contexto de oficina com base na narrativa fornecida
 
 ## Narrativa:
 - Sistema de controle e gerenciamento de execução de ordens de serviço em uma oficina mecânica
@@ -13,3 +10,16 @@ Cria o esquema conceitual para o contexto de oficina com base na narrativa forne
 - A mesma equipe avalia e executa os serviços
 - Os mecânicos possuem código, nome, endereço e especialidade
 - Cada OS possui: n°, data de emissão, um valor, status e uma data para conclusão dos trabalhos.
+
+## Solução:
+### 6 Entidades:
+- Peca;
+- Servico;
+- Cliente;
+- Mecanico;
+- Equipe;
+- OS.
+### 3 Relaciomentos:
+- Pecas_em (Relacionamento N X N entre Peca e OS);
+- Servico_em (N X N entre Servico e OS);
+- Trabalha_em (N X N entre Mecanico e Equipe).
