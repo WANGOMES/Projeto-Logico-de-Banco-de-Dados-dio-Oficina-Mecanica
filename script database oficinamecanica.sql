@@ -68,14 +68,53 @@ CREATE TABLE OS(
 	Preco decimal(6,2) DEFAULT (0.00) 
 );
 
+
+-- TRIGGERS --
+-- Tables OS and Servico_em --
+
 DELIMITER $
 CREATE TRIGGER Preco_Os AFTER INSERT
 ON Servico_em
 FOR EACH ROW
 BEGIN
-SELECT SUM(s.PrecoServico)AS SOMA FROM Servico s 
-	JOIN Servico_em se ON se.Servico_id=s.idServico 
-	JOIN OS ON OS.idOs=se.Os_id WHERE OS.idOs=se.Os_id;
-UPDATE OS SET Preco= NEW.Preco + SOMA;
+UPDATE OS SET Preco = Preco + (SELECT PrecoServico FROM Servico 
+	WHERE NEW.Servico_id=idServico)
+	WHERE idOs=NEW.Os_id;
+END$
+DELIMITER ;
+
+DELIMITER $
+CREATE TRIGGER Delete_Preco_Os AFTER DELETE
+ON Servico_em
+FOR EACH ROW
+BEGIN
+UPDATE OS SET Preco = Preco - (SELECT PrecoServico FROM Servico 
+	WHERE OLD.Servico_id=idServico)
+	WHERE idOs=OLD.Os_id;
+END$
+DELIMITER ;
+
+-- TRIGGERS --
+-- Tables OS and Pecas_em --
+
+DELIMITER $
+CREATE TRIGGER Increment_Pecas_Os AFTER INSERT
+ON Pecas_em
+FOR EACH ROW
+BEGIN
+UPDATE OS SET Preco = Preco + (SELECT PrecoPeca FROM Peca
+	WHERE NEW.Peca_id=idPeca)
+	WHERE idOs=NEW.Os_id;
+END$
+DELIMITER ;
+
+DELIMITER $
+CREATE TRIGGER Decrement_Pecas_Os AFTER DELETE
+ON Pecas_em
+FOR EACH ROW
+BEGIN
+UPDATE OS SET Preco = Preco - (SELECT PrecoPeca FROM Peca
+	WHERE OLD.Peca_id=idPeca)
+	WHERE idOs=OLD.Os_id;
 END$
 DELIMITER ;
