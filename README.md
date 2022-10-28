@@ -23,3 +23,54 @@ Construindo o Projeto Lógico de Banco de Dados de um Sistema de Emissão de Ord
 - Pecas_em (Relacionamento N X N entre Peca e OS);
 - Servico_em (N X N entre Servico e OS);
 - Trabalha_em (N X N entre Mecanico e Equipe).
+### 4 Triggers:
+Os triggers 1 e 2 estão relacionados à tabela _**Servicos_em**_ atualizando a tabela _**OS**_ sempre que houver uma adição ou subtração de um serviço na OS. 
+
+      -- Trigger 1 --
+      DELIMITER $
+      CREATE TRIGGER Preco_Os AFTER INSERT
+      ON Servico_em
+      FOR EACH ROW
+      BEGIN
+      UPDATE OS SET Preco = Preco + (SELECT PrecoServico FROM Servico WHERE NEW.Servico_id=idServico)
+	      WHERE idOs=NEW.Os_id;
+      END$
+      DELIMITER ;
+
+      -- Trigger 2 --
+      DELIMITER $
+      CREATE TRIGGER Delete_Preco_Os AFTER DELETE
+      ON Servico_em
+      FOR EACH ROW
+      BEGIN
+      UPDATE OS SET Preco = Preco - (SELECT PrecoServico FROM Servico WHERE OLD.Servico_id=idServico)
+	      WHERE idOs=OLD.Os_id;
+      END$
+      DELIMITER ;
+
+Os triggers 3 e 4 fazem a mesma função dos dois anteriores, mas são acionados sempre que inserimos ou excluímos uma peça na tabela _**Pecas_em**_.
+
+      
+      -- Trigger 3 --
+      DELIMITER $
+      CREATE TRIGGER Increment_Pecas_Os AFTER INSERT
+      ON Pecas_em
+      FOR EACH ROW
+      BEGIN
+      UPDATE OS SET Preco = Preco + (SELECT PrecoPeca FROM Peca WHERE NEW.Peca_id=idPeca)
+	      WHERE idOs=NEW.Os_id;
+      END$
+      DELIMITER ;
+
+      -- Trigger 4 --
+      DELIMITER $
+      CREATE TRIGGER Decrement_Pecas_Os AFTER DELETE
+      ON Pecas_em
+      FOR EACH ROW
+      BEGIN
+      UPDATE OS SET Preco = Preco - (SELECT PrecoPeca FROM Peca WHERE OLD.Peca_id=idPeca)
+	      WHERE idOs=OLD.Os_id;
+      END$
+      DELIMITER ;
+ 
+Os arquivos .sql de criação de tabelas e manipulação de dados estão anexos.
